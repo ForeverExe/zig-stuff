@@ -3,3 +3,5 @@ ziglings.org/
 .pdb
 .obj
 .obsidian/
+raylib/raylib-zig/
+.zig-cache
