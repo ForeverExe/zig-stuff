@@ -59,6 +59,17 @@ pub fn build(b: *std.Build) void {
     // step when running `zig build`).
     b.installArtifact(exe);
 
+    //raygui stuff
+    const guiexe = b.addExecutable(.{
+        .name = "guitest",
+        .root_source_file = b.path("src/guitest.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    guiexe.linkLibrary(raylib_artifact);
+    guiexe.root_module.addImport("raylib", raylib);
+    guiexe.root_module.addImport("raygui", raygui);
+    b.installArtifact(guiexe);
     // This *creates* a Run step in the build graph, to be executed when another
     // step is evaluated that depends on it. The next line below will establish
     // such a dependency.
@@ -82,6 +93,14 @@ pub fn build(b: *std.Build) void {
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
 
+    const guirun = b.addRunArtifact(guiexe);
+    guirun.step.dependOn(b.getInstallStep());
+    if (b.args) |args| {
+        guirun.addArgs(args);
+    }
+
+    const guirun_step = b.step("Gui", "Avvia il programma relativo alla GUI");
+    guirun_step.dependOn(&guirun.step);
     // Creates a step for unit testing. This only builds the test executable
     // but does not run it.
     const lib_unit_tests = b.addTest(.{

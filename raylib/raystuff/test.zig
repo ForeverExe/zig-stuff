@@ -1,4 +1,4 @@
-const rl = @import("lib/raylib.zig");
+const rl = @import("./lib/raylib.lib");
 
 pub fn main() anyerror!void {
     // Initialization
